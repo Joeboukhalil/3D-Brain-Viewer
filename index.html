@@ -28,12 +28,11 @@
 <div id="tooltip"></div>
 <div id="loader">Loading brain model...</div>
 
-<!-- Local JS files -->
-<script src="./three.min.js"></script>
-<script src="./OrbitControls.js"></script>
-<script src="./GLTFLoader.js"></script>
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.module.js';
+  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/loaders/GLTFLoader.js';
 
-<script>
   const tooltip = document.getElementById('tooltip');
   const loaderEl = document.getElementById('loader');
 
@@ -53,7 +52,7 @@
   dirLight.position.set(5,5,5);
   scene.add(dirLight);
 
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.07;
 
@@ -63,30 +62,36 @@
   const brainGroup = new THREE.Group();
   scene.add(brainGroup);
 
-  const loader = new THREE.GLTFLoader();
-  loader.load('https://drive.google.com/uc?export=download&id=1zp5EQN2YI-I75WFOJAPgN7hCRTjVTc2P', function(gltf){
-    loaderEl.style.display = 'none';
-    brainGroup.add(gltf.scene);
+  const loader = new GLTFLoader();
+  loader.load(
+    'https://drive.google.com/uc?export=download&id=1zp5EQN2YI-I75WFOJAPgN7hCRTjVTc2P',
+    function(gltf){
+      loaderEl.style.display = 'none';
+      brainGroup.add(gltf.scene);
 
-    gltf.scene.traverse(c=>{
-      if(c.isMesh){
-        c.material = new THREE.MeshStandardMaterial({color:0xcccccc, metalness:0.05, roughness:0.7});
-        c.userData.regionName = c.name || 'Brain Region';
-      }
-    });
+      gltf.scene.traverse(c=>{
+        if(c.isMesh){
+          c.material = new THREE.MeshStandardMaterial({color:0xcccccc, metalness:0.05, roughness:0.7});
+          c.userData.regionName = c.name || 'Brain Region';
+        }
+      });
 
-    const box = new THREE.Box3().setFromObject(gltf.scene);
-    const size = box.getSize(new THREE.Vector3()).length();
-    const center = box.getCenter(new THREE.Vector3());
-    camera.position.copy(center).add(new THREE.Vector3(size*0.6, size*0.4, size*1.2));
-    controls.target.copy(center);
-    controls.update();
-  }, function(xhr){
-    loaderEl.innerText = 'Loading brain model... ' + Math.round(xhr.loaded/xhr.total*100) + '%';
-  }, function(err){
-    loaderEl.innerText = 'Failed to load model';
-    console.error(err);
-  });
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+      camera.position.copy(center).add(new THREE.Vector3(size*0.6, size*0.4, size*1.2));
+      controls.target.copy(center);
+      controls.update();
+    },
+    function(xhr){
+      if(xhr.lengthComputable)
+        loaderEl.innerText = 'Loading brain model... ' + Math.round(xhr.loaded/xhr.total*100) + '%';
+    },
+    function(err){
+      loaderEl.innerText = 'Failed to load model';
+      console.error(err);
+    }
+  );
 
   window.addEventListener('pointermove', e=>{
     const rect = renderer.domElement.getBoundingClientRect();
@@ -118,4 +123,3 @@
 </script>
 </body>
 </html>
-
