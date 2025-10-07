@@ -48,7 +48,7 @@
   <div id="loader">Loading brain model...</div>
 
   <script type="module">
-    // ES Module imports from unpkg
+    // Import Three.js and helpers from CDN
     import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
@@ -67,6 +67,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // Lights
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.6);
     scene.add(hemiLight);
 
@@ -74,10 +75,12 @@
     dirLight.position.set(5,5,5);
     scene.add(dirLight);
 
+    // Orbit Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.07;
 
+    // Raycaster for tooltips
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -126,6 +129,7 @@
       }
     );
 
+    // Tooltip
     window.addEventListener('pointermove', e => {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -144,12 +148,14 @@
       }
     });
 
+    // Resize handler
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
+    // Animate
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
