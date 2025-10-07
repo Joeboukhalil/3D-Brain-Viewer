@@ -28,10 +28,10 @@
 <div id="tooltip"></div>
 <div id="loader">Loading brain model...</div>
 
-<!-- Include Three.js and loaders -->
-<script src="three.min.js"></script>
-<script src="OrbitControls.js"></script>
-<script src="GLTFLoader.js"></script>
+<!-- CDN Scripts for Three.js and loaders -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
   const tooltip = document.getElementById('tooltip');
@@ -64,7 +64,7 @@
   scene.add(brainGroup);
 
   const loader = new THREE.GLTFLoader();
-  loader.load('./models/brain_realistic_free.glb', function(gltf){
+  loader.load('https://drive.google.com/uc?export=download&id=1zp5EQN2YI-I75WFOJAPgN7hCRTjVTc2P', function(gltf){
     loaderEl.style.display = 'none';
     brainGroup.add(gltf.scene);
 
