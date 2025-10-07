@@ -40,7 +40,7 @@
       "Brain Realistic FREE" by 
       <a href="https://skfb.ly/oOHxB" target="_blank">darklord3d</a> 
       is licensed under 
-      <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 (CC BY 4.0)</a>.
+      <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
     </div>
   </header>
 
@@ -48,12 +48,12 @@
   <div id="loader">Loading brain model...</div>
 
   <script type="module">
+    // ES Module imports from unpkg
     import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
     import { DRACOLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/DRACOLoader.js';
 
-    const container = document.body;
     const tooltip = document.getElementById('tooltip');
     const loaderEl = document.getElementById('loader');
 
@@ -65,13 +65,14 @@
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+    document.body.appendChild(renderer.domElement);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x222222, 0.6);
-    scene.add(hemi);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
-    dir.position.set(5, 5, 5);
-    scene.add(dir);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.6);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(5,5,5);
+    scene.add(dirLight);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -80,6 +81,7 @@
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
+    // Load Brain Model
     const gltfLoader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -88,7 +90,7 @@
     const brainGroup = new THREE.Group();
     scene.add(brainGroup);
 
-    const MODEL_URL = './models/brain_realistic_free.glb'; // local model path
+    const MODEL_URL = './models/brain_realistic_free.glb';
 
     gltfLoader.load(
       MODEL_URL,
@@ -98,20 +100,25 @@
 
         gltf.scene.traverse(c => {
           if (c.isMesh) {
-            c.material = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.05, roughness: 0.7 });
+            c.material = new THREE.MeshStandardMaterial({
+              color: 0xcccccc,
+              metalness: 0.05,
+              roughness: 0.7
+            });
             c.userData.regionName = c.name || 'Brain Region';
           }
         });
 
+        // Center camera
         const box = new THREE.Box3().setFromObject(gltf.scene);
         const size = box.getSize(new THREE.Vector3()).length();
         const center = box.getCenter(new THREE.Vector3());
-        camera.position.copy(center).add(new THREE.Vector3(size * 0.6, size * 0.4, size * 1.2));
+        camera.position.copy(center).add(new THREE.Vector3(size*0.6, size*0.4, size*1.2));
         controls.target.copy(center);
         controls.update();
       },
       (xhr) => {
-        loaderEl.innerText = `Loading brain model... ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
+        loaderEl.innerText = `Loading brain model... ${Math.round((xhr.loaded / xhr.total)*100)}%`;
       },
       (err) => {
         loaderEl.innerText = 'Failed to load model. Check file path.';
@@ -123,14 +130,18 @@
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(brainGroup.children, true);
-      if (intersects.length > 0) {
+
+      if(intersects.length > 0){
         tooltip.style.left = `${e.clientX}px`;
         tooltip.style.top = `${e.clientY}px`;
         tooltip.style.display = 'block';
         tooltip.textContent = intersects[0].object.userData.regionName;
-      } else tooltip.style.display = 'none';
+      } else {
+        tooltip.style.display = 'none';
+      }
     });
 
     window.addEventListener('resize', () => {
@@ -139,11 +150,12 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    function animate() {
+    function animate(){
       requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
     }
+
     animate();
   </script>
 </body>
