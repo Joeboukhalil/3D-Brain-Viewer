@@ -28,10 +28,10 @@
 <div id="tooltip"></div>
 <div id="loader">Loading brain model...</div>
 
-<!-- CDN Scripts for Three.js and loaders -->
+<!-- Working CDN Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://rawcdn.githack.com/mrdoob/three/r149/examples/js/controls/OrbitControls.js"></script>
+<script src="https://rawcdn.githack.com/mrdoob/three/r149/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
   const tooltip = document.getElementById('tooltip');
@@ -75,7 +75,6 @@
       }
     });
 
-    // Center camera
     const box = new THREE.Box3().setFromObject(gltf.scene);
     const size = box.getSize(new THREE.Vector3()).length();
     const center = box.getCenter(new THREE.Vector3());
@@ -119,3 +118,4 @@
 </script>
 </body>
 </html>
+
